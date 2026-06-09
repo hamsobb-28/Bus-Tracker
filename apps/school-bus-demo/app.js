@@ -117,10 +117,127 @@ const routePath = [
 
 const stopProgressThresholds = [70, 85, 99];
 
+const fleetRoutes = {
+  "12": {
+    id: "12",
+    label: "Bus 12",
+    routeName: "North Loop",
+    driver: "Ms. Carter",
+    className: "bus-12",
+    color: "#1a73e8",
+    stops: routeStops,
+    path: routePath,
+    progress: () => state.progress,
+    status: () => state.status
+  },
+  "18": {
+    id: "18",
+    label: "Bus 18",
+    routeName: "East Ridge",
+    driver: "Mr. Patel",
+    className: "bus-18",
+    color: "#1f7a4f",
+    progress: () => 42,
+    status: () => "Active",
+    stops: [
+      { name: "Sharon High School", eta: "Departing", lat: 42.113659, lng: -71.177707 },
+      { name: "Cottage Street School", eta: "7 min", lat: 42.119561, lng: -71.173502 },
+      { name: "East Elementary School", eta: "18 min", lat: 42.114321, lng: -71.147715 }
+    ],
+    path: [
+      { lat: 42.113659, lng: -71.177707 },
+      { lat: 42.113667, lng: -71.176041 },
+      { lat: 42.11469, lng: -71.176311 },
+      { lat: 42.11844, lng: -71.17627 },
+      { lat: 42.118635, lng: -71.173102 },
+      { lat: 42.119129, lng: -71.173319 },
+      { lat: 42.119907, lng: -71.173596 },
+      { lat: 42.121296, lng: -71.172588 },
+      { lat: 42.121275, lng: -71.170287 },
+      { lat: 42.121266, lng: -71.169124 },
+      { lat: 42.121257, lng: -71.168096 },
+      { lat: 42.12125, lng: -71.16724 },
+      { lat: 42.121238, lng: -71.165835 },
+      { lat: 42.121171, lng: -71.164576 },
+      { lat: 42.121162, lng: -71.162562 },
+      { lat: 42.12141, lng: -71.15958 },
+      { lat: 42.12067, lng: -71.15949 },
+      { lat: 42.12034, lng: -71.15867 },
+      { lat: 42.11935, lng: -71.15946 },
+      { lat: 42.11854, lng: -71.1599 },
+      { lat: 42.117718, lng: -71.158015 },
+      { lat: 42.11782, lng: -71.157848 },
+      { lat: 42.118029, lng: -71.157521 },
+      { lat: 42.118153, lng: -71.156236 },
+      { lat: 42.116822, lng: -71.153682 },
+      { lat: 42.116677, lng: -71.153288 },
+      { lat: 42.11609, lng: -71.15099 },
+      { lat: 42.115487, lng: -71.148474 },
+      { lat: 42.114578, lng: -71.147419 },
+      { lat: 42.11448, lng: -71.147681 },
+      { lat: 42.114321, lng: -71.147715 }
+    ]
+  },
+  "22": {
+    id: "22",
+    label: "Bus 22",
+    routeName: "South Line",
+    driver: "Ms. Brooks",
+    className: "bus-22",
+    color: "#d97706",
+    progress: () => 100,
+    status: () => "Completed",
+    stops: [
+      { name: "Sharon High School", eta: "Departing", lat: 42.113659, lng: -71.177707 },
+      { name: "East Foxboro Street", eta: "12 min", lat: 42.108929, lng: -71.189944 },
+      { name: "Heights Elementary School", eta: "Completed", lat: 42.104079, lng: -71.204572 }
+    ],
+    path: [
+      { lat: 42.113659, lng: -71.177707 },
+      { lat: 42.113667, lng: -71.176041 },
+      { lat: 42.111789, lng: -71.178272 },
+      { lat: 42.111536, lng: -71.179847 },
+      { lat: 42.110084, lng: -71.180751 },
+      { lat: 42.109515, lng: -71.180941 },
+      { lat: 42.109201, lng: -71.181115 },
+      { lat: 42.108236, lng: -71.181727 },
+      { lat: 42.107581, lng: -71.182353 },
+      { lat: 42.107131, lng: -71.182994 },
+      { lat: 42.106727, lng: -71.184141 },
+      { lat: 42.106388, lng: -71.184825 },
+      { lat: 42.105871, lng: -71.185588 },
+      { lat: 42.105385, lng: -71.186642 },
+      { lat: 42.105003, lng: -71.186954 },
+      { lat: 42.104832, lng: -71.18713 },
+      { lat: 42.10497, lng: -71.187494 },
+      { lat: 42.10716, lng: -71.18975 },
+      { lat: 42.108752, lng: -71.18997 },
+      { lat: 42.10965, lng: -71.189815 },
+      { lat: 42.11095, lng: -71.189559 },
+      { lat: 42.111774, lng: -71.189199 },
+      { lat: 42.111995, lng: -71.189241 },
+      { lat: 42.11211, lng: -71.189334 },
+      { lat: 42.112126, lng: -71.189651 },
+      { lat: 42.111269, lng: -71.191513 },
+      { lat: 42.110171, lng: -71.19395 },
+      { lat: 42.108852, lng: -71.197094 },
+      { lat: 42.10801, lng: -71.198981 },
+      { lat: 42.107501, lng: -71.20021 },
+      { lat: 42.106686, lng: -71.202391 },
+      { lat: 42.10613, lng: -71.203912 },
+      { lat: 42.105684, lng: -71.204956 },
+      { lat: 42.105054, lng: -71.206316 },
+      { lat: 42.104295, lng: -71.205594 },
+      { lat: 42.104172, lng: -71.205436 },
+      { lat: 42.104079, lng: -71.204572 }
+    ]
+  }
+};
+
 const fleetBuses = [
-  { id: "12", label: "Bus 12", className: "bus-12", lat: 42.1137, lng: -71.1775 },
-  { id: "18", label: "Bus 18", className: "bus-18", lat: 42.1212, lng: -71.1742 },
-  { id: "22", label: "Bus 22", className: "bus-22", lat: 42.1172, lng: -71.1866 }
+  fleetRoutes["12"],
+  fleetRoutes["18"],
+  fleetRoutes["22"]
 ];
 
 const state = {
@@ -139,6 +256,8 @@ const elements = {
   globalStatus: document.querySelector("#global-status"),
   parentStatus: document.querySelector("#parent-status"),
   adminBus12: document.querySelector("#admin-bus-12"),
+  adminBus18: document.querySelector("#admin-bus-18"),
+  adminBus22: document.querySelector("#admin-bus-22"),
   driverStatus: document.querySelector("#driver-status"),
   driverDetail: document.querySelector("#driver-detail"),
   driverLastPing: document.querySelector("#driver-last-ping"),
@@ -155,9 +274,10 @@ const maps = {
   parent: null,
   admin: null,
   parentBusMarker: null,
-  adminBusMarker: null,
+  adminBusMarkers: {},
   resizeObserver: null,
-  routeBounds: null,
+  parentRouteBounds: null,
+  fleetRouteBounds: null,
   isProgrammaticMove: false
 };
 
@@ -183,18 +303,18 @@ function currentStopIndex() {
   return 4;
 }
 
-function addRouteLine(map, routeLatLngs, weight) {
+function addRouteLine(map, routeLatLngs, weight, color = "#1a73e8", classSuffix = "blue") {
   const routeCasing = L.polyline(routeLatLngs, {
     color: "#ffffff",
-    className: "route-line route-line-casing",
+    className: `route-line route-line-casing route-line-${classSuffix}-casing`,
     interactive: false,
     weight: weight + 5,
     opacity: 0.9,
     smoothFactor: 1
   }).addTo(map);
   const routeLine = L.polyline(routeLatLngs, {
-    color: "#1a73e8",
-    className: "route-line route-line-blue",
+    color,
+    className: `route-line route-line-${classSuffix}`,
     interactive: false,
     weight,
     opacity: 0.95,
@@ -205,14 +325,13 @@ function addRouteLine(map, routeLatLngs, weight) {
   routeLine.bringToFront();
 }
 
-function getPositionFromProgress() {
-  const points = routePath;
+function getPositionOnPath(points, progress) {
   const segmentDistances = points.slice(0, -1).map((point, index) => {
     const next = points[index + 1];
     return Math.hypot(next.lat - point.lat, next.lng - point.lng);
   });
   const totalDistance = segmentDistances.reduce((sum, distance) => sum + distance, 0);
-  let targetDistance = totalDistance * (state.progress / 100);
+  let targetDistance = totalDistance * (progress / 100);
   let segment = 0;
 
   while (segment < segmentDistances.length - 1 && targetDistance > segmentDistances[segment]) {
@@ -228,6 +347,14 @@ function getPositionFromProgress() {
     lat: start.lat + (end.lat - start.lat) * localProgress,
     lng: start.lng + (end.lng - start.lng) * localProgress
   };
+}
+
+function getPositionFromProgress() {
+  return getPositionOnPath(routePath, state.progress);
+}
+
+function getBusPosition(bus) {
+  return getPositionOnPath(bus.path, bus.progress());
 }
 
 function makeIcon(className, label, size) {
@@ -265,14 +392,19 @@ function initMaps() {
 
   const routeLatLngs = routePath.map((point) => [point.lat, point.lng]);
   const stopLatLngs = routeStops.map((stop) => [stop.lat, stop.lng]);
-  maps.routeBounds = L.latLngBounds([...routeLatLngs, ...stopLatLngs]);
+  const fleetLatLngs = fleetBuses.flatMap((bus) => [
+    ...bus.path.map((point) => [point.lat, point.lng]),
+    ...bus.stops.map((stop) => [stop.lat, stop.lng])
+  ]);
+  maps.parentRouteBounds = L.latLngBounds([...routeLatLngs, ...stopLatLngs]);
+  maps.fleetRouteBounds = L.latLngBounds(fleetLatLngs);
   const parentMap = L.map("parent-map", {
     scrollWheelZoom: false,
     zoomControl: true
   }).setView([42.1199, -71.1806], 15);
 
   addTileLayer(parentMap);
-  addRouteLine(parentMap, routeLatLngs, 6);
+  addRouteLine(parentMap, routeLatLngs, 6, fleetRoutes["12"].color, "bus-12");
 
   routeStops.forEach((stop, index) => {
     L.marker([stop.lat, stop.lng], {
@@ -285,26 +417,36 @@ function initMaps() {
     zIndexOffset: 1000
   }).addTo(parentMap).bindPopup("Bus 12");
 
-  parentMap.fitBounds(maps.routeBounds, { padding: [36, 36] });
+  parentMap.fitBounds(maps.parentRouteBounds, { padding: [36, 36] });
   const adminMap = L.map("admin-map", {
     scrollWheelZoom: false,
     zoomControl: false
   }).setView([42.1199, -71.1806], 14);
 
   addTileLayer(adminMap);
-  addRouteLine(adminMap, routeLatLngs, 5);
-
   fleetBuses.forEach((bus) => {
-    const marker = L.marker([bus.lat, bus.lng], {
-      icon: makeIcon(`fleet-map-marker ${bus.className}`, bus.id, 38)
-    }).addTo(adminMap).bindPopup(bus.label);
+    const busLatLngs = bus.path.map((point) => [point.lat, point.lng]);
+    addRouteLine(adminMap, busLatLngs, bus.id === "12" ? 5 : 4, bus.color, `bus-${bus.id}`);
 
-    if (bus.id === "12") {
-      maps.adminBusMarker = marker;
-    }
+    bus.stops.slice(1).forEach((stop, index) => {
+      L.marker([stop.lat, stop.lng], {
+        icon: makeIcon("stop-map-marker", `${bus.id}.${index + 1}`, 30),
+        zIndexOffset: 250
+      }).addTo(adminMap).bindPopup(`${bus.label}: ${stop.name}`);
+    });
   });
 
-  adminMap.fitBounds(maps.routeBounds, { padding: [30, 30] });
+  fleetBuses.forEach((bus) => {
+    const position = getBusPosition(bus);
+    const marker = L.marker([position.lat, position.lng], {
+      icon: makeIcon(`fleet-map-marker ${bus.className}`, bus.id, 38),
+      zIndexOffset: 900
+    }).addTo(adminMap).bindPopup(bus.label);
+
+    maps.adminBusMarkers[bus.id] = marker;
+  });
+
+  adminMap.fitBounds(maps.fleetRouteBounds, { padding: [30, 30] });
 
   maps.parent = parentMap;
   maps.admin = adminMap;
@@ -347,13 +489,13 @@ function refreshVisibleMaps() {
     if (state.activeView === "parent") {
       if (state.followBus) {
         centerOnBus(false);
-      } else if (maps.routeBounds) {
-        maps.parent?.fitBounds(maps.routeBounds, { padding: [36, 36], animate: false });
+      } else if (maps.parentRouteBounds) {
+        maps.parent?.fitBounds(maps.parentRouteBounds, { padding: [36, 36], animate: false });
       }
     }
 
-    if (state.activeView === "admin" && maps.routeBounds) {
-      maps.admin?.fitBounds(maps.routeBounds, { padding: [30, 30], animate: false });
+    if (state.activeView === "admin" && maps.fleetRouteBounds) {
+      maps.admin?.fitBounds(maps.fleetRouteBounds, { padding: [30, 30], animate: false });
     }
   }, 80);
 }
@@ -382,6 +524,8 @@ function setStatus(status) {
   elements.globalStatus.className = `status-pill ${normalized}`;
   elements.parentStatus.textContent = status;
   elements.adminBus12.textContent = status;
+  elements.adminBus18.textContent = fleetRoutes["18"].status();
+  elements.adminBus22.textContent = fleetRoutes["22"].status();
   elements.driverStatus.textContent = status;
 }
 
@@ -397,7 +541,10 @@ function renderBusPosition() {
   const position = getPositionFromProgress();
   const latLng = [position.lat, position.lng];
   maps.parentBusMarker?.setLatLng(latLng);
-  maps.adminBusMarker?.setLatLng(latLng);
+  fleetBuses.forEach((bus) => {
+    const busPosition = getBusPosition(bus);
+    maps.adminBusMarkers[bus.id]?.setLatLng([busPosition.lat, busPosition.lng]);
+  });
 
   if (state.followBus) {
     maps.isProgrammaticMove = true;

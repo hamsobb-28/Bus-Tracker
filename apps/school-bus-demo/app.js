@@ -184,18 +184,25 @@ function currentStopIndex() {
 }
 
 function addRouteLine(map, routeLatLngs, weight) {
-  L.polyline(routeLatLngs, {
+  const routeCasing = L.polyline(routeLatLngs, {
     color: "#ffffff",
+    className: "route-line route-line-casing",
+    interactive: false,
     weight: weight + 5,
     opacity: 0.9,
     smoothFactor: 1
   }).addTo(map);
-  L.polyline(routeLatLngs, {
+  const routeLine = L.polyline(routeLatLngs, {
     color: "#1a73e8",
+    className: "route-line route-line-blue",
+    interactive: false,
     weight,
     opacity: 0.95,
     smoothFactor: 1
   }).addTo(map);
+
+  routeCasing.bringToFront();
+  routeLine.bringToFront();
 }
 
 function getPositionFromProgress() {

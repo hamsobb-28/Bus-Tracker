@@ -147,12 +147,6 @@ function initMaps() {
   }).addTo(parentMap).bindPopup("Bus 12");
 
   parentMap.fitBounds(maps.routeBounds, { padding: [36, 36] });
-  parentMap.on("dragstart", () => {
-    if (!maps.isProgrammaticMove && state.followBus) {
-      setFollowBus(false);
-    }
-  });
-
   const adminMap = L.map("admin-map", {
     scrollWheelZoom: false,
     zoomControl: false

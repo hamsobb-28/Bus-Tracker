@@ -239,7 +239,16 @@ button {
   gap: 10px;
 }
 
+.map-shell {
+  position: relative;
+  border-top: 1px solid var(--line);
+}
+
 .map-follow-button {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 1001;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -279,7 +288,6 @@ button {
   height: clamp(440px, 54vh, 560px);
   min-height: 440px;
   overflow: hidden;
-  border-top: 1px solid var(--line);
   background: #dfe7e2;
 }
 
@@ -780,7 +788,8 @@ dd {
   }
 
   .map-follow-button {
-    width: fit-content;
+    top: 12px;
+    right: 12px;
   }
 
   .fleet-item {

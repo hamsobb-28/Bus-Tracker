@@ -419,8 +419,8 @@ function initMaps() {
 
   parentMap.fitBounds(maps.parentRouteBounds, { padding: [36, 36] });
   const adminMap = L.map("admin-map", {
-    scrollWheelZoom: false,
-    zoomControl: false
+    scrollWheelZoom: true,
+    zoomControl: true
   }).setView([42.1199, -71.1806], 14);
 
   addTileLayer(adminMap);

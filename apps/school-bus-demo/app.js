@@ -11,6 +11,24 @@ const routeStops = [
   { name: "Sharon Station", eta: "16 min", lat: 42.1257, lng: -71.1848 }
 ];
 
+const routePath = [
+  { lat: 42.1137, lng: -71.1775 },
+  { lat: 42.1144, lng: -71.1780 },
+  { lat: 42.1155, lng: -71.1788 },
+  { lat: 42.1167, lng: -71.1795 },
+  { lat: 42.1182, lng: -71.1801 },
+  { lat: 42.1197, lng: -71.1800 },
+  { lat: 42.1213, lng: -71.1794 },
+  { lat: 42.1226, lng: -71.1789 },
+  { lat: 42.1237, lng: -71.1787 },
+  { lat: 42.1240, lng: -71.1796 },
+  { lat: 42.1244, lng: -71.1808 },
+  { lat: 42.1246, lng: -71.1819 },
+  { lat: 42.1249, lng: -71.1830 },
+  { lat: 42.1253, lng: -71.1840 },
+  { lat: 42.1257, lng: -71.1848 }
+];
+
 const fleetBuses = [
   { id: "12", label: "Bus 12", className: "bus-12", lat: 42.1137, lng: -71.1775 },
   { id: "18", label: "Bus 18", className: "bus-18", lat: 42.1212, lng: -71.1742 },
@@ -78,11 +96,21 @@ function currentStopIndex() {
 }
 
 function getPositionFromProgress() {
-  const points = routeStops.map((stop) => ({ lat: stop.lat, lng: stop.lng }));
+  const points = routePath;
+  const segmentDistances = points.slice(0, -1).map((point, index) => {
+    const next = points[index + 1];
+    return Math.hypot(next.lat - point.lat, next.lng - point.lng);
+  });
+  const totalDistance = segmentDistances.reduce((sum, distance) => sum + distance, 0);
+  let targetDistance = totalDistance * (state.progress / 100);
+  let segment = 0;
 
-  const segmentSize = 100 / (points.length - 1);
-  const segment = Math.min(points.length - 2, Math.floor(state.progress / segmentSize));
-  const localProgress = (state.progress - segment * segmentSize) / segmentSize;
+  while (segment < segmentDistances.length - 1 && targetDistance > segmentDistances[segment]) {
+    targetDistance -= segmentDistances[segment];
+    segment += 1;
+  }
+
+  const localProgress = segmentDistances[segment] === 0 ? 0 : targetDistance / segmentDistances[segment];
   const start = points[segment];
   const end = points[segment + 1];
 
@@ -125,15 +153,16 @@ function initMaps() {
     return;
   }
 
-  const routeLatLngs = routeStops.map((stop) => [stop.lat, stop.lng]);
-  maps.routeBounds = L.latLngBounds(routeLatLngs);
+  const routeLatLngs = routePath.map((point) => [point.lat, point.lng]);
+  const stopLatLngs = routeStops.map((stop) => [stop.lat, stop.lng]);
+  maps.routeBounds = L.latLngBounds([...routeLatLngs, ...stopLatLngs]);
   const parentMap = L.map("parent-map", {
     scrollWheelZoom: false,
     zoomControl: true
   }).setView([42.1199, -71.1806], 15);
 
   addTileLayer(parentMap);
-  L.polyline(routeLatLngs, { color: "#1f7a4f", weight: 6, opacity: 0.72 }).addTo(parentMap);
+  L.polyline(routeLatLngs, { color: "#1f7a4f", weight: 6, opacity: 0.72, smoothFactor: 0.75 }).addTo(parentMap);
 
   routeStops.forEach((stop, index) => {
     L.marker([stop.lat, stop.lng], {
@@ -153,7 +182,7 @@ function initMaps() {
   }).setView([42.1199, -71.1806], 14);
 
   addTileLayer(adminMap);
-  L.polyline(routeLatLngs, { color: "#1f7a4f", weight: 5, opacity: 0.62 }).addTo(adminMap);
+  L.polyline(routeLatLngs, { color: "#1f7a4f", weight: 5, opacity: 0.62, smoothFactor: 0.75 }).addTo(adminMap);
 
   fleetBuses.forEach((bus) => {
     const marker = L.marker([bus.lat, bus.lng], {

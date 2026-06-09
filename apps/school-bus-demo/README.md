@@ -8,7 +8,7 @@ This is the Phase 1 demo for the school bus tracker project, currently tailored 
 - Driver route controls.
 - Admin fleet overview.
 - Real OpenStreetMap map tiles through Leaflet.
-- Simulated bus movement on a real Sharon, MA map.
+- Simulated bus movement along a street-following Sharon, MA demo route.
 - Toggleable Follow Bus control that centers the parent map on Bus 12 and keeps following as it moves.
 - Simulated route status and ETA.
 
@@ -23,7 +23,7 @@ No server, install step, or API key is required. The map layer uses Leaflet and 
 - Bus movement is simulated.
 - There is no real authentication yet.
 - There is no real database yet.
-- The route and bus movement are still simulated.
+- The route and bus movement are still simulated, but the visible route uses extra waypoints so it follows the street grid more closely than a straight stop-to-stop line.
 - Notifications are planned for later phases.
 
 ## Map Notes

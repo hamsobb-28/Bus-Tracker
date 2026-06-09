@@ -50,6 +50,7 @@ const maps = {
   admin: null,
   parentBusMarker: null,
   adminBusMarker: null,
+  resizeObserver: null,
   routeBounds: null,
   isProgrammaticMove: false
 };
@@ -174,6 +175,9 @@ function initMaps() {
 
   maps.parent = parentMap;
   maps.admin = adminMap;
+  maps.resizeObserver = new ResizeObserver(() => refreshVisibleMaps());
+  maps.resizeObserver.observe(document.querySelector("#parent-map"));
+  maps.resizeObserver.observe(document.querySelector("#admin-map"));
   refreshVisibleMaps();
 }
 
@@ -263,7 +267,11 @@ function renderBusPosition() {
   maps.adminBusMarker?.setLatLng(latLng);
 
   if (state.followBus) {
+    maps.isProgrammaticMove = true;
     maps.parent?.panTo(latLng, { animate: true, duration: 0.55 });
+    window.setTimeout(() => {
+      maps.isProgrammaticMove = false;
+    }, 650);
   }
 
   const stopIndex = currentStopIndex();

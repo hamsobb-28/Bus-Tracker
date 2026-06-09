@@ -5,29 +5,117 @@ const views = {
 };
 
 const routeStops = [
-  { name: "Sharon High School", eta: "Departing", lat: 42.1137, lng: -71.1775 },
-  { name: "Post Office Square", eta: "6 min", lat: 42.1237, lng: -71.1787 },
-  { name: "Sharon Public Library", eta: "11 min", lat: 42.1246, lng: -71.1819 },
-  { name: "Sharon Station", eta: "16 min", lat: 42.1257, lng: -71.1848 }
+  { name: "Sharon High School", eta: "Departing", lat: 42.113659, lng: -71.177707 },
+  { name: "Post Office Square", eta: "6 min", lat: 42.1236, lng: -71.17876 },
+  { name: "Sharon Public Library", eta: "11 min", lat: 42.12441, lng: -71.182002 },
+  { name: "Sharon Station", eta: "16 min", lat: 42.125748, lng: -71.184742 }
 ];
 
+// Street-snapped route geometry from OSRM/OpenStreetMap for the demo stops.
 const routePath = [
-  { lat: 42.1137, lng: -71.1775 },
-  { lat: 42.1144, lng: -71.1780 },
-  { lat: 42.1155, lng: -71.1788 },
-  { lat: 42.1167, lng: -71.1795 },
-  { lat: 42.1182, lng: -71.1801 },
-  { lat: 42.1197, lng: -71.1800 },
-  { lat: 42.1213, lng: -71.1794 },
-  { lat: 42.1226, lng: -71.1789 },
-  { lat: 42.1237, lng: -71.1787 },
-  { lat: 42.1240, lng: -71.1796 },
-  { lat: 42.1244, lng: -71.1808 },
-  { lat: 42.1246, lng: -71.1819 },
-  { lat: 42.1249, lng: -71.1830 },
-  { lat: 42.1253, lng: -71.1840 },
-  { lat: 42.1257, lng: -71.1848 }
+  { lat: 42.113659, lng: -71.177707 },
+  { lat: 42.113596, lng: -71.177684 },
+  { lat: 42.113528, lng: -71.177632 },
+  { lat: 42.113482, lng: -71.177545 },
+  { lat: 42.113465, lng: -71.17744 },
+  { lat: 42.113481, lng: -71.177277 },
+  { lat: 42.113667, lng: -71.176041 },
+  { lat: 42.113759, lng: -71.176059 },
+  { lat: 42.113806, lng: -71.176072 },
+  { lat: 42.113884, lng: -71.176093 },
+  { lat: 42.114435, lng: -71.176242 },
+  { lat: 42.114603, lng: -71.176288 },
+  { lat: 42.11469, lng: -71.176311 },
+  { lat: 42.114826, lng: -71.176347 },
+  { lat: 42.115684, lng: -71.176571 },
+  { lat: 42.11764, lng: -71.17709 },
+  { lat: 42.118393, lng: -71.177277 },
+  { lat: 42.118443, lng: -71.177289 },
+  { lat: 42.11908, lng: -71.17747 },
+  { lat: 42.119391, lng: -71.177548 },
+  { lat: 42.119953, lng: -71.177688 },
+  { lat: 42.120142, lng: -71.177735 },
+  { lat: 42.120343, lng: -71.177787 },
+  { lat: 42.120358, lng: -71.17779 },
+  { lat: 42.1204, lng: -71.1778 },
+  { lat: 42.120425, lng: -71.177806 },
+  { lat: 42.120546, lng: -71.177836 },
+  { lat: 42.120666, lng: -71.177866 },
+  { lat: 42.120687, lng: -71.177872 },
+  { lat: 42.121047, lng: -71.177964 },
+  { lat: 42.121127, lng: -71.177985 },
+  { lat: 42.121263, lng: -71.17802 },
+  { lat: 42.121274, lng: -71.178022 },
+  { lat: 42.12131, lng: -71.178032 },
+  { lat: 42.121462, lng: -71.17807 },
+  { lat: 42.121525, lng: -71.178086 },
+  { lat: 42.121669, lng: -71.178121 },
+  { lat: 42.121723, lng: -71.178134 },
+  { lat: 42.122022, lng: -71.178206 },
+  { lat: 42.12206, lng: -71.178216 },
+  { lat: 42.122234, lng: -71.17826 },
+  { lat: 42.122498, lng: -71.178327 },
+  { lat: 42.122588, lng: -71.178347 },
+  { lat: 42.122666, lng: -71.178364 },
+  { lat: 42.122887, lng: -71.178412 },
+  { lat: 42.123027, lng: -71.178442 },
+  { lat: 42.12305, lng: -71.178446 },
+  { lat: 42.123171, lng: -71.178466 },
+  { lat: 42.123247, lng: -71.178473 },
+  { lat: 42.123297, lng: -71.178474 },
+  { lat: 42.123346, lng: -71.178469 },
+  { lat: 42.123359, lng: -71.178467 },
+  { lat: 42.123371, lng: -71.178463 },
+  { lat: 42.123425, lng: -71.17843 },
+  { lat: 42.123475, lng: -71.178383 },
+  { lat: 42.1236, lng: -71.17876 },
+  { lat: 42.123617, lng: -71.178813 },
+  { lat: 42.123668, lng: -71.178951 },
+  { lat: 42.123725, lng: -71.179111 },
+  { lat: 42.123767, lng: -71.17923 },
+  { lat: 42.123778, lng: -71.179262 },
+  { lat: 42.123804, lng: -71.179337 },
+  { lat: 42.123826, lng: -71.179406 },
+  { lat: 42.123848, lng: -71.179475 },
+  { lat: 42.12387, lng: -71.179543 },
+  { lat: 42.123883, lng: -71.179584 },
+  { lat: 42.123922, lng: -71.179694 },
+  { lat: 42.123948, lng: -71.179773 },
+  { lat: 42.123971, lng: -71.179856 },
+  { lat: 42.123985, lng: -71.179902 },
+  { lat: 42.123997, lng: -71.179959 },
+  { lat: 42.124017, lng: -71.180053 },
+  { lat: 42.124051, lng: -71.180231 },
+  { lat: 42.124113, lng: -71.180575 },
+  { lat: 42.124124, lng: -71.180636 },
+  { lat: 42.124292, lng: -71.181548 },
+  { lat: 42.124302, lng: -71.181593 },
+  { lat: 42.12432, lng: -71.181663 },
+  { lat: 42.124384, lng: -71.181916 },
+  { lat: 42.12441, lng: -71.182002 },
+  { lat: 42.124421, lng: -71.182041 },
+  { lat: 42.124446, lng: -71.182134 },
+  { lat: 42.124509, lng: -71.182358 },
+  { lat: 42.124614, lng: -71.182711 },
+  { lat: 42.124707, lng: -71.182999 },
+  { lat: 42.124758, lng: -71.183125 },
+  { lat: 42.124805, lng: -71.183233 },
+  { lat: 42.124857, lng: -71.183335 },
+  { lat: 42.124915, lng: -71.183438 },
+  { lat: 42.124968, lng: -71.183526 },
+  { lat: 42.125132, lng: -71.183787 },
+  { lat: 42.1252, lng: -71.183892 },
+  { lat: 42.125248, lng: -71.183963 },
+  { lat: 42.125278, lng: -71.184011 },
+  { lat: 42.125436, lng: -71.184259 },
+  { lat: 42.125504, lng: -71.184365 },
+  { lat: 42.125577, lng: -71.184478 },
+  { lat: 42.125702, lng: -71.184671 },
+  { lat: 42.12572, lng: -71.1847 },
+  { lat: 42.125748, lng: -71.184742 }
 ];
+
+const stopProgressThresholds = [70, 85, 99];
 
 const fleetBuses = [
   { id: "12", label: "Bus 12", className: "bus-12", lat: 42.1137, lng: -71.1775 },
@@ -89,10 +177,25 @@ function renderStops() {
 }
 
 function currentStopIndex() {
-  if (state.progress < 25) return 1;
-  if (state.progress < 58) return 2;
-  if (state.progress < 88) return 3;
+  if (state.progress < stopProgressThresholds[0]) return 1;
+  if (state.progress < stopProgressThresholds[1]) return 2;
+  if (state.progress < stopProgressThresholds[2]) return 3;
   return 4;
+}
+
+function addRouteLine(map, routeLatLngs, weight) {
+  L.polyline(routeLatLngs, {
+    color: "#ffffff",
+    weight: weight + 5,
+    opacity: 0.9,
+    smoothFactor: 1
+  }).addTo(map);
+  L.polyline(routeLatLngs, {
+    color: "#1a73e8",
+    weight,
+    opacity: 0.95,
+    smoothFactor: 1
+  }).addTo(map);
 }
 
 function getPositionFromProgress() {
@@ -162,7 +265,7 @@ function initMaps() {
   }).setView([42.1199, -71.1806], 15);
 
   addTileLayer(parentMap);
-  L.polyline(routeLatLngs, { color: "#1f7a4f", weight: 6, opacity: 0.72, smoothFactor: 0.75 }).addTo(parentMap);
+  addRouteLine(parentMap, routeLatLngs, 6);
 
   routeStops.forEach((stop, index) => {
     L.marker([stop.lat, stop.lng], {
@@ -182,7 +285,7 @@ function initMaps() {
   }).setView([42.1199, -71.1806], 14);
 
   addTileLayer(adminMap);
-  L.polyline(routeLatLngs, { color: "#1f7a4f", weight: 5, opacity: 0.62, smoothFactor: 0.75 }).addTo(adminMap);
+  addRouteLine(adminMap, routeLatLngs, 5);
 
   fleetBuses.forEach((bus) => {
     const marker = L.marker([bus.lat, bus.lng], {

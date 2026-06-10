@@ -4,6 +4,37 @@ const views = {
   admin: document.querySelector("#admin-view")
 };
 
+const demoAccounts = {
+  parent: {
+    name: "Chen Family",
+    role: "Parent",
+    assignedBusId: "12",
+    allowedViews: ["parent"],
+    startView: "parent"
+  },
+  student: {
+    name: "Maya Rivera",
+    role: "Student",
+    assignedBusId: "18",
+    allowedViews: ["parent"],
+    startView: "parent"
+  },
+  driver: {
+    name: "Ms. Carter",
+    role: "Driver",
+    assignedBusId: "12",
+    allowedViews: ["driver"],
+    startView: "driver"
+  },
+  admin: {
+    name: "Transportation Office",
+    role: "Admin",
+    assignedBusId: "12",
+    allowedViews: ["admin", "parent", "driver"],
+    startView: "admin"
+  }
+};
+
 const routeStops = [
   { name: "Sharon High School", eta: "Departing", lat: 42.113659, lng: -71.177707 },
   { name: "Post Office Square", eta: "6 min", lat: 42.1236, lng: -71.17876 },
@@ -242,6 +273,8 @@ const fleetBuses = [
 
 const state = {
   activeView: "parent",
+  currentUser: null,
+  assignedBusId: "12",
   status: "Not started",
   progress: 0,
   delayed: false,
@@ -252,14 +285,22 @@ const state = {
 };
 
 const elements = {
+  loginScreen: document.querySelector("#login-screen"),
+  appShell: document.querySelector("#app-shell"),
   viewTitle: document.querySelector("#view-title"),
+  currentUser: document.querySelector("#current-user"),
+  logoutButton: document.querySelector("#logout-button"),
   globalStatus: document.querySelector("#global-status"),
   parentStatus: document.querySelector("#parent-status"),
+  parentRouteHeading: document.querySelector("#parent-route-heading"),
   adminBus12: document.querySelector("#admin-bus-12"),
   adminBus18: document.querySelector("#admin-bus-18"),
   adminBus22: document.querySelector("#admin-bus-22"),
   driverStatus: document.querySelector("#driver-status"),
   driverDetail: document.querySelector("#driver-detail"),
+  driverRouteHeading: document.querySelector("#driver-route-heading"),
+  driverRouteCopy: document.querySelector("#driver-route-copy"),
+  driverName: document.querySelector("#driver-name"),
   driverLastPing: document.querySelector("#driver-last-ping"),
   parentLastUpdate: document.querySelector("#parent-last-update"),
   adminLastUpdate: document.querySelector("#admin-last-update"),
@@ -274,6 +315,7 @@ const maps = {
   parent: null,
   admin: null,
   parentBusMarker: null,
+  parentRouteLayers: [],
   adminBusMarkers: {},
   resizeObserver: null,
   parentRouteBounds: null,
@@ -281,10 +323,24 @@ const maps = {
   isProgrammaticMove: false
 };
 
+function assignedRoute() {
+  return fleetRoutes[state.assignedBusId] || fleetRoutes["12"];
+}
+
+function routeProgress(route) {
+  return route.id === "12" ? state.progress : route.progress();
+}
+
+function routeStatus(route) {
+  return route.id === "12" ? state.status : route.status();
+}
+
 function renderStops() {
-  elements.parentStops.innerHTML = routeStops
+  const route = assignedRoute();
+  const stopIndex = currentStopIndex(route);
+  elements.parentStops.innerHTML = route.stops
     .map((stop, index) => {
-      const className = index < currentStopIndex() ? "done" : index === currentStopIndex() ? "current" : "";
+      const className = index < stopIndex ? "done" : index === stopIndex ? "current" : "";
       return `
         <li class="${className}">
           <span class="stop-dot">${index + 1}</span>
@@ -296,7 +352,13 @@ function renderStops() {
     .join("");
 }
 
-function currentStopIndex() {
+function currentStopIndex(route = fleetRoutes["12"]) {
+  if (route.id !== "12") {
+    const stopCount = route.stops.length;
+    const stepSize = 100 / Math.max(stopCount - 1, 1);
+    return Math.min(stopCount, Math.floor(routeProgress(route) / stepSize) + 1);
+  }
+
   if (state.progress < stopProgressThresholds[0]) return 1;
   if (state.progress < stopProgressThresholds[1]) return 2;
   if (state.progress < stopProgressThresholds[2]) return 3;
@@ -323,6 +385,8 @@ function addRouteLine(map, routeLatLngs, weight, color = "#1a73e8", classSuffix 
 
   routeCasing.bringToFront();
   routeLine.bringToFront();
+
+  return [routeCasing, routeLine];
 }
 
 function getPositionOnPath(points, progress) {
@@ -350,11 +414,12 @@ function getPositionOnPath(points, progress) {
 }
 
 function getPositionFromProgress() {
-  return getPositionOnPath(routePath, state.progress);
+  const route = assignedRoute();
+  return getPositionOnPath(route.path, routeProgress(route));
 }
 
 function getBusPosition(bus) {
-  return getPositionOnPath(bus.path, bus.progress());
+  return getPositionOnPath(bus.path, routeProgress(bus));
 }
 
 function makeIcon(className, label, size) {
@@ -383,6 +448,41 @@ function showMapFallback(containerId) {
   `;
 }
 
+function drawAssignedRoute() {
+  if (!maps.parent) return;
+
+  maps.parentRouteLayers.forEach((layer) => layer.remove());
+  maps.parentRouteLayers = [];
+
+  const route = assignedRoute();
+  const routeLatLngs = route.path.map((point) => [point.lat, point.lng]);
+  const stopLatLngs = route.stops.map((stop) => [stop.lat, stop.lng]);
+  maps.parentRouteBounds = L.latLngBounds([...routeLatLngs, ...stopLatLngs]);
+
+  maps.parentRouteLayers.push(...addRouteLine(maps.parent, routeLatLngs, 6, route.color, `bus-${route.id}`));
+  route.stops.forEach((stop, index) => {
+    const marker = L.marker([stop.lat, stop.lng], {
+      icon: makeIcon("stop-map-marker", index + 1, 30),
+      zIndexOffset: 250
+    }).addTo(maps.parent).bindPopup(`${route.label}: ${stop.name}`);
+    maps.parentRouteLayers.push(marker);
+  });
+
+  if (!maps.parentBusMarker) {
+    maps.parentBusMarker = L.marker([route.stops[0].lat, route.stops[0].lng], {
+      icon: makeIcon("bus-map-marker", route.id, 48),
+      zIndexOffset: 1000
+    }).addTo(maps.parent);
+  }
+
+  maps.parentBusMarker
+    .setIcon(makeIcon("bus-map-marker", route.id, 48))
+    .setLatLng([getPositionFromProgress().lat, getPositionFromProgress().lng])
+    .bindPopup(route.label);
+
+  maps.parent.fitBounds(maps.parentRouteBounds, { padding: [36, 36], animate: false });
+}
+
 function initMaps() {
   if (!window.L) {
     showMapFallback("parent-map");
@@ -390,13 +490,10 @@ function initMaps() {
     return;
   }
 
-  const routeLatLngs = routePath.map((point) => [point.lat, point.lng]);
-  const stopLatLngs = routeStops.map((stop) => [stop.lat, stop.lng]);
   const fleetLatLngs = fleetBuses.flatMap((bus) => [
     ...bus.path.map((point) => [point.lat, point.lng]),
     ...bus.stops.map((stop) => [stop.lat, stop.lng])
   ]);
-  maps.parentRouteBounds = L.latLngBounds([...routeLatLngs, ...stopLatLngs]);
   maps.fleetRouteBounds = L.latLngBounds(fleetLatLngs);
   const parentMap = L.map("parent-map", {
     scrollWheelZoom: false,
@@ -404,20 +501,6 @@ function initMaps() {
   }).setView([42.1199, -71.1806], 15);
 
   addTileLayer(parentMap);
-  addRouteLine(parentMap, routeLatLngs, 6, fleetRoutes["12"].color, "bus-12");
-
-  routeStops.forEach((stop, index) => {
-    L.marker([stop.lat, stop.lng], {
-      icon: makeIcon("stop-map-marker", index + 1, 30)
-    }).addTo(parentMap).bindPopup(stop.name);
-  });
-
-  maps.parentBusMarker = L.marker([routeStops[0].lat, routeStops[0].lng], {
-    icon: makeIcon("bus-map-marker", "12", 48),
-    zIndexOffset: 1000
-  }).addTo(parentMap).bindPopup("Bus 12");
-
-  parentMap.fitBounds(maps.parentRouteBounds, { padding: [36, 36] });
   const adminMap = L.map("admin-map", {
     scrollWheelZoom: true,
     zoomControl: true
@@ -450,6 +533,7 @@ function initMaps() {
 
   maps.parent = parentMap;
   maps.admin = adminMap;
+  drawAssignedRoute();
   maps.resizeObserver = new ResizeObserver(() => refreshVisibleMaps());
   maps.resizeObserver.observe(document.querySelector("#parent-map"));
   maps.resizeObserver.observe(document.querySelector("#admin-map"));
@@ -500,7 +584,13 @@ function refreshVisibleMaps() {
   }, 80);
 }
 
+function allowedViews() {
+  return state.currentUser?.allowedViews || [];
+}
+
 function setView(viewName) {
+  if (state.currentUser && !allowedViews().includes(viewName)) return;
+
   state.activeView = viewName;
   document.querySelectorAll(".role-tab").forEach((button) => {
     button.classList.toggle("active", button.dataset.view === viewName);
@@ -514,19 +604,67 @@ function setView(viewName) {
     admin: "Admin Dashboard"
   }[viewName];
 
+  renderRouteContext();
   refreshVisibleMaps();
+}
+
+function applyRoleAccess() {
+  document.querySelectorAll(".role-tab").forEach((button) => {
+    const isAllowed = allowedViews().includes(button.dataset.view);
+    button.classList.toggle("is-hidden", !isAllowed);
+    button.disabled = !isAllowed;
+  });
+}
+
+function login(accountKey) {
+  const account = demoAccounts[accountKey];
+  if (!account) return;
+
+  state.currentUser = account;
+  state.assignedBusId = account.assignedBusId;
+  elements.currentUser.textContent = `${account.role}: ${account.name}`;
+  elements.loginScreen.classList.add("is-hidden");
+  elements.appShell.classList.remove("is-locked");
+  applyRoleAccess();
+  drawAssignedRoute();
+  renderBusPosition();
+  setView(account.startView);
+}
+
+function logout() {
+  state.currentUser = null;
+  state.assignedBusId = "12";
+  elements.currentUser.textContent = "Not signed in";
+  elements.loginScreen.classList.remove("is-hidden");
+  elements.appShell.classList.add("is-locked");
+  setFollowBus(false);
+  applyRoleAccess();
+  setView("parent");
 }
 
 function setStatus(status) {
   state.status = status;
-  const normalized = status.toLowerCase().replace(" ", "-");
-  elements.globalStatus.textContent = status;
+  const visibleRoute = state.activeView === "parent" ? assignedRoute() : fleetRoutes["12"];
+  const visibleStatus = state.activeView === "admin" ? "Fleet view" : routeStatus(visibleRoute);
+  const normalized = visibleStatus.toLowerCase().replace(" ", "-");
+  elements.globalStatus.textContent = visibleStatus;
   elements.globalStatus.className = `status-pill ${normalized}`;
-  elements.parentStatus.textContent = status;
+  elements.parentStatus.textContent = routeStatus(assignedRoute());
   elements.adminBus12.textContent = status;
   elements.adminBus18.textContent = fleetRoutes["18"].status();
   elements.adminBus22.textContent = fleetRoutes["22"].status();
   elements.driverStatus.textContent = status;
+}
+
+function renderRouteContext() {
+  const route = assignedRoute();
+  elements.parentRouteHeading.textContent = `${route.label} - ${route.routeName}`;
+  elements.parentStatus.textContent = routeStatus(route);
+  elements.followBus.title = `Center and follow ${route.label}`;
+  elements.driverRouteHeading.textContent = `${fleetRoutes["12"].label} - ${fleetRoutes["12"].routeName}`;
+  elements.driverRouteCopy.textContent = `Share ${fleetRoutes["12"].label} phone location while the route is active. Families and students see only assigned routes.`;
+  elements.driverName.textContent = fleetRoutes["12"].driver;
+  setStatus(state.status);
 }
 
 function updateLastPing() {
@@ -554,22 +692,26 @@ function renderBusPosition() {
     }, 650);
   }
 
-  const stopIndex = currentStopIndex();
-  const next = routeStops[Math.min(stopIndex, routeStops.length - 1)];
-  elements.nextStop.textContent = state.progress >= 96 ? "Route complete" : next.name;
+  const route = assignedRoute();
+  const stopIndex = currentStopIndex(route);
+  const routeDone = routeProgress(route) >= 96;
+  const next = route.stops[Math.min(stopIndex, route.stops.length - 1)];
+  elements.nextStop.textContent = routeDone ? "Route complete" : next.name;
 
-  if (state.status === "Not started") {
+  const visibleStatus = routeStatus(route);
+  if (visibleStatus === "Not started") {
     elements.eta.textContent = "Waiting for driver";
-  } else if (state.status === "Completed") {
+  } else if (visibleStatus === "Completed") {
     elements.eta.textContent = "Bus arrived";
-  } else if (state.status === "Paused") {
+  } else if (visibleStatus === "Paused") {
     elements.eta.textContent = "Tracking paused";
   } else {
-    const baseEta = Math.max(2, Math.ceil((100 - state.progress) / 8));
-    elements.eta.textContent = state.delayed ? `${baseEta + 8} min - delayed` : `${baseEta} min`;
+    const baseEta = Math.max(2, Math.ceil((100 - routeProgress(route)) / 8));
+    elements.eta.textContent = route.id === "12" && state.delayed ? `${baseEta + 8} min - delayed` : `${baseEta} min`;
   }
 
   renderStops();
+  renderRouteContext();
 }
 
 function startRoute() {
@@ -632,6 +774,11 @@ document.querySelectorAll(".role-tab").forEach((button) => {
   button.addEventListener("click", () => setView(button.dataset.view));
 });
 
+document.querySelectorAll(".login-card").forEach((button) => {
+  button.addEventListener("click", () => login(button.dataset.account));
+});
+
+elements.logoutButton.addEventListener("click", logout);
 document.querySelector("#start-route").addEventListener("click", startRoute);
 document.querySelector("#pause-route").addEventListener("click", pauseRoute);
 document.querySelector("#end-route").addEventListener("click", () => endRoute(false));
@@ -639,5 +786,7 @@ document.querySelector("#delay-route").addEventListener("click", reportDelay);
 elements.followBus.addEventListener("click", () => setFollowBus(!state.followBus));
 
 initMaps();
+applyRoleAccess();
+renderRouteContext();
 renderStops();
 renderBusPosition();

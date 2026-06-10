@@ -13,7 +13,42 @@
     <link rel="stylesheet" href="styles.css">
   </head>
   <body>
-    <div class="app-shell">
+    <section class="login-screen" id="login-screen" aria-labelledby="login-title">
+      <div class="login-panel">
+        <div class="brand login-brand">
+          <div class="brand-mark">RW</div>
+          <div>
+            <p class="eyebrow">RouteWise Demo</p>
+            <h1 id="login-title">Choose a demo login</h1>
+          </div>
+        </div>
+
+        <div class="login-grid" aria-label="Demo account logins">
+          <button class="login-card" type="button" data-account="parent">
+            <span class="login-icon">P</span>
+            <strong>Parent</strong>
+            <span>Chen family - Bus 12</span>
+          </button>
+          <button class="login-card" type="button" data-account="student">
+            <span class="login-icon">S</span>
+            <strong>Student</strong>
+            <span>Maya Rivera - Bus 18</span>
+          </button>
+          <button class="login-card" type="button" data-account="driver">
+            <span class="login-icon">D</span>
+            <strong>Driver</strong>
+            <span>Ms. Carter - Bus 12</span>
+          </button>
+          <button class="login-card" type="button" data-account="admin">
+            <span class="login-icon">A</span>
+            <strong>Admin</strong>
+            <span>Transportation office</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <div class="app-shell is-locked" id="app-shell">
       <aside class="sidebar" aria-label="Main navigation">
         <div class="brand">
           <div class="brand-mark">RW</div>
@@ -50,7 +85,11 @@
             <p class="eyebrow">Sharon High School - Sharon, MA 02067</p>
             <h2 id="view-title">My Bus</h2>
           </div>
-          <div class="status-pill" id="global-status">Not started</div>
+          <div class="topbar-actions">
+            <span id="current-user">Not signed in</span>
+            <div class="status-pill" id="global-status">Not started</div>
+            <button class="logout-button" id="logout-button" type="button">Log out</button>
+          </div>
         </header>
 
         <section class="view active" id="parent-view" aria-labelledby="view-title">
@@ -59,7 +98,7 @@
               <div class="map-header">
                 <div>
                   <p class="eyebrow">Assigned route</p>
-                  <h3>Bus 12 - North Loop</h3>
+                  <h3 id="parent-route-heading">Bus 12 - North Loop</h3>
                 </div>
                 <div class="map-actions">
                   <span id="parent-last-update">No live updates yet</span>
@@ -104,12 +143,12 @@
           <div class="driver-layout">
             <section class="driver-card">
               <p class="eyebrow">Today's assignment</p>
-              <h3>Bus 12 - North Loop</h3>
-              <p class="body-copy">Share phone location while the route is active. Parents see only the route they are assigned to.</p>
+              <h3 id="driver-route-heading">Bus 12 - North Loop</h3>
+              <p class="body-copy" id="driver-route-copy">Share phone location while the route is active. Parents see only the route they are assigned to.</p>
               <div class="control-grid">
                 <button class="command primary-command" id="start-route" type="button">Start Route</button>
-                <button class="command" id="pause-route" type="button">Pause</button>
-                <button class="command" id="end-route" type="button">End Route</button>
+                <button class="command" id="pause-route" type="button">Stop Updates</button>
+                <button class="command" id="end-route" type="button">Complete Route</button>
                 <button class="command alert-command" id="delay-route" type="button">Report Delay</button>
               </div>
             </section>
@@ -136,7 +175,7 @@
               <dl>
                 <div>
                   <dt>Driver</dt>
-                  <dd>Ms. Carter</dd>
+                  <dd id="driver-name">Ms. Carter</dd>
                 </div>
                 <div>
                   <dt>Location source</dt>
